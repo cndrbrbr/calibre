@@ -1,0 +1,47 @@
+services:
+  calibre:
+    #image: lscr.io/linuxserver/calibre:latest
+    build: .
+    container_name: calibre
+    environment:
+      - TZ=Europe/Berlin
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - "8080:8080"   # Calibre Web UI (noVNC)
+      - "8181:8181"   # optional (je nach Image/Setup)
+    volumes:
+      - calibre_config:/config
+      # Gemeinsame Calibre-Library (enthält metadata.db) -> lokal als Docker-Volume
+      - calibre_library:/books
+      # SMB-Mount vom Host als Import-Quelle (nur lesen)
+      - /mnt/ebooks:/import:ro
+    restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - TZ=Europe/Berlin
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - "8083:8083"
+    volumes:
+      - calibreweb_config:/config
+      # Genau dieselbe Library wie Calibre -> damit sieht Calibre-Web metadata.db
+      - calibre_library:/books
+      # SMB-Mount vom Host als Import-Quelle (nur lesen)
+      - /mnt/ebooks:/import:ro
+
+    restart: unless-stopped
+
+volumes:
+  calibre_config:
+    name : calibre_config
+
+  calibreweb_config:
+    name : calibre_config
+
+  calibre_library:
+    name: calibre_library
