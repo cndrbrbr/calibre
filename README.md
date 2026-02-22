@@ -1,2 +1,2 @@
-# calibre
-setting up calibre and calibre-we with docker compose
+# bookshelf service container configuration 
+setting up calibre and calibre-web with docker compose
